@@ -1,0 +1,186 @@
+version: "3.9"
+
+services:
+  # Redis
+  # redis:
+  #   image: redis:7.2.4-alpine
+  #   container_name: redis
+  #   hostname: redis
+  #   restart: on-failure
+  #   volumes:
+  #     - ${PWD}/redis/datadir:/data
+  #     - ${PWD}/apps/redis.conf:/usr/local/etc/redis/redis.conf
+  #     - ${PWD}/redis/logs:/logs
+  #   command: redis-server --requirepass password
+  #   #   #  两个写入操作 只是为了解决启动后警告 可以去掉
+  #   #    /bin/bash -c "echo 511 > /proc/sys/net/core/somaxconn
+  #   #    && echo never > /sys/kernel/mm/transparent_hugepage/enabled
+  #   #    && redis-server /usr/local/etc/redis/redis.conf"
+  #   ports:
+  #     - 6379:6379
+  #   networks:
+  #     - infra-network
+
+  # redis-commander:
+  #   image: ghcr.io/joeferner/redis-commander:latest
+  #   hostname: redis-commander
+  #   container_name: redis-commander
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - redis
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     REDIS_HOSTS: redis
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: redis:6379
+  #     REDIS_PASSWORD: password
+  #     HTTP_USER: root
+  #     HTTP_PASSWORD: root
+  #   networks:
+  #     - infra-network
+
+  # CockroachDB
+  # cockroach-db:
+  #   image: cockroachdb/cockroach:v19.2.2
+  #   hostname: cockroach
+  #   container_name: cockroach
+  #   restart: on-failure
+  #   ports:
+  #     - 26257:26257
+  #     - 8080:8080
+  #   command: start-single-node --insecure
+  #   volumes:
+  #     - ${PWD}/cockroach/crdb:/cockroach/cockroach-data
+  #   networks:
+  #     - infra-network
+
+  # RabbitMQ stack
+  rabbitmq-1:
+    image: rabbitmq:3.11.28-management-alpine
+    hostname: rabbitmq-1
+    container_name: rabbitmq-1
+    restart: on-failure
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_CONFIG_FILE: /config/rabbitmq
+      RABBITMQ_ERLANG_COOKIE: GREATIST
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - ${PWD}/apps/rabbit-1/rabbitmq.conf:/config/
+      # - ${PWD}/rabbitmq/etc-1/:/etc/rabbitmq/
+      # - ${PWD}/rabbitmq/data-1/:/var/lib/rabbitmq/
+      # - ${PWD}/rabbitmq/logs-1/:/var/log/rabbitmq/
+    ports:
+      - 5672:5672   # amqp
+      - 15672:15672 # http
+      - 15692:15692 # prometheus
+    networks:
+      - rabbitmq-network
+  
+  rabbitmq-2:
+    image: rabbitmq:3.11.28-management-alpine
+    hostname: rabbitmq-2
+    container_name: rabbitmq-2
+    restart: on-failure
+    depends_on:
+      - rabbitmq-1
+    volumes:
+      - ${PWD}/apps/rabbit-2/rabbitmq.conf:/config/
+      # - ${PWD}/rabbitmq/etc-2/:/etc/rabbitmq/
+      # - ${PWD}/rabbitmq/data-2/:/var/lib/rabbitmq/
+      # - ${PWD}/rabbitmq/logs-2/:/var/log/rabbitmq/
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_ERLANG_COOKIE: GREATIST
+      RABBITMQ_CONFIG_FILE: /config/rabbitmq
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - 5673:5672   # amqp
+      - 15673:15672 # http
+      - 15693:15692 # prometheus
+    networks:
+      - rabbitmq-network
+    
+  rabbitmq-3:
+    image: rabbitmq:3.11.28-management-alpine
+    hostname: rabbitmq-3
+    container_name: rabbitmq-3
+    restart: on-failure
+    depends_on:
+      - rabbitmq-1
+    volumes:
+      - ${PWD}/apps/rabbit-3/rabbitmq.conf:/config/
+      # - ${PWD}/rabbitmq/etc-3/:/etc/rabbitmq/
+      # - ${PWD}/rabbitmq/data-3/:/var/lib/rabbitmq/
+      # - ${PWD}/rabbitmq/logs-3/:/var/log/rabbitmq/
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_ERLANG_COOKIE: GREATIST
+      RABBITMQ_CONFIG_FILE: /config/rabbitmq
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - 5674:5672   # amqp
+      - 15674:15672 # http
+      - 15694:15692 # prometheus
+    networks:
+      - rabbitmq-network
+    
+  nginx-rabbitmq:
+    image: nginx
+    container_name: nginx-rabbitmq
+    ports:
+      - 5000:80
+      - 15000:15000
+    volumes:
+      - ${PWD}/apps/nginx-rabbitmq.conf:/etc/nginx/nginx.conf
+      - ${PWD}/nginx-rabbitmq/log:/var/log/nginx/
+    networks:
+      - rabbitmq-network
+    depends_on:
+      - rabbitmq-1
+      - rabbitmq-2
+      - rabbitmq-3
+
+  # Minio
+  # minio:
+  #   image: minio/minio
+  #   container_name: minio
+  #   hostname: minio
+  #   restart: on-failure
+  #   environment:
+  #     - MINIO_ACCESS_KEY=miniominio
+  #     - MINIO_SECRET_KEY=miniominio13
+  #   ports:
+  #     - 9000:9000
+  #   command: server /data
+  #   volumes:
+  #     - ${PWD}/data:/data
+  #   networks:
+  #     - infra-network
+
+  # Typesense
+  # typesense:
+  #   image: typesense/typesense:0.22.2
+  #   container_name: typesense
+  #   hostname: typesense
+  #   restart: on-failure
+  #   environment:
+  #     TYPESENSE_DATA_DIR: /data
+  #     TYPESENSE_ENABLE_CORS: true
+  #     TYPESENSE_API_KEY: test-key
+  #   ports:
+  #     - 8108:8108
+  #   volumes:
+  #     - ${PWD}/typesense:/data
+  #   networks:
+  #     - infra-network
+
+networks:
+  infra-network:
+    driver: bridge
+  rabbitmq-network:
+    driver: bridge
