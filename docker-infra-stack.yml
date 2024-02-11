@@ -1,60 +1,163 @@
 version: "3.9"
 
 # Settings and configurations that are common for all containers
-x-minio-common: &minio-common
-  image: quay.io/minio/minio:RELEASE.2024-02-09T21-25-16Z
-  command: server --console-address ":9001" http://minio-{1...4}/data{1...2}
-  expose:
-    - "9000"
-    - "9001"
-  environment:
-    MINIO_ROOT_USER: admin
-    MINIO_ROOT_PASSWORD: admin123
-  healthcheck:
-    test: ["CMD", "mc", "ready", "local"]
-    interval: 5s
-    timeout: 5s
-    retries: 5
+# x-minio-common: &minio-common
+#   image: quay.io/minio/minio:RELEASE.2024-02-09T21-25-16Z
+#   command: server --console-address ":9001" http://minio-{1...4}/data{1...2}
+#   expose:
+#     - "9000"
+#     - "9001"
+#   environment:
+#     MINIO_ROOT_USER: admin
+#     MINIO_ROOT_PASSWORD: admin123
+#   healthcheck:
+#     test: ["CMD", "mc", "ready", "local"]
+#     interval: 5s
+#     timeout: 5s
+#     retries: 5
 
 services:
-  # Redis
-  # redis:
-  #   image: redis:7.2.4-alpine
-  #   container_name: redis
-  #   hostname: redis
-  #   restart: on-failure
-  #   volumes:
-  #     - ${PWD}/redis/datadir:/data
-  #     - ${PWD}/apps/redis.conf:/usr/local/etc/redis/redis.conf
-  #     - ${PWD}/redis/logs:/logs
-  #   command: redis-server --requirepass password
-  #   #   #  两个写入操作 只是为了解决启动后警告 可以去掉
-  #   #    /bin/bash -c "echo 511 > /proc/sys/net/core/somaxconn
-  #   #    && echo never > /sys/kernel/mm/transparent_hugepage/enabled
-  #   #    && redis-server /usr/local/etc/redis/redis.conf"
-  #   ports:
-  #     - 6379:6379
-  #   networks:
-  #     - infra-network
+  # Redis stack
+  redis-node-1:
+    image: docker.io/bitnami/redis-cluster:7.0.15
+    hostname: redis-node-1
+    container_name: redis-node-1
+    restart: always
+    networks:
+      redis-network:
+        ipv4_address: 172.22.0.101
+    environment:
+      - REDIS_PORT_NUMBER: 7001
+      - REDIS_PASSWORD: admin123
+      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
+      - REDIS_CLUSTER_ANNOUNCE_PORT: 7001
+      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
+      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17001
+      - REDIS_CLUSTER_DYNAMIC_IPS: no
+    ports:
+      - 7001:7001
+      - 17001:17001
 
-  # redis-commander:
-  #   image: ghcr.io/joeferner/redis-commander:latest
-  #   hostname: redis-commander
-  #   container_name: redis-commander
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     REDIS_HOSTS: redis
-  #     REDIS_HOST: redis
-  #     REDIS_PORT: redis:6379
-  #     REDIS_PASSWORD: password
-  #     HTTP_USER: root
-  #     HTTP_PASSWORD: root
-  #   networks:
-  #     - infra-network
+  redis-node-2:
+    image: docker.io/bitnami/redis-cluster:7.0.15
+    hostname: redis-node-2
+    container_name: redis-node-2
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 172.22.0.102
+    environment:
+      - REDIS_PORT_NUMBER: 7002
+      - REDIS_PASSWORD: admin123
+      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
+      - REDIS_CLUSTER_ANNOUNCE_PORT: 7002
+      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
+      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17002
+      - REDIS_CLUSTER_DYNAMIC_IPS: no
+    ports:
+      - 7002:7002
+      - 17002:17002
+
+  redis-node-3:
+    image: docker.io/bitnami/redis-cluster:7.0.15
+    hostname: redis-node-3
+    container_name: redis-node-3
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 172.22.0.103
+    environment:
+      - REDIS_PORT_NUMBER: 7003
+      - REDIS_PASSWORD: admin123
+      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
+      - REDIS_CLUSTER_ANNOUNCE_PORT: 7003
+      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
+      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17003
+      - REDIS_CLUSTER_DYNAMIC_IPS: no
+    ports:
+      - 7003:7003
+      - 17003:17003
+  
+  redis-node-4:
+    image: docker.io/bitnami/redis-cluster:7.0.15
+    hostname: redis-node-4
+    container_name: redis-node-4
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 172.22.0.104
+    environment:
+      - REDIS_PORT_NUMBER: 7004
+      - REDIS_PASSWORD: admin123
+      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
+      - REDIS_CLUSTER_ANNOUNCE_PORT: 7004
+      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
+      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17004
+      - REDIS_CLUSTER_DYNAMIC_IPS: no
+    ports:
+      - 7004:7004
+      - 17004:17004
+
+  redis-node-5:
+    image: docker.io/bitnami/redis-cluster:7.0.15
+    hostname: redis-node-5
+    container_name: redis-node-5
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 172.22.0.105
+    environment:
+      - REDIS_PORT_NUMBER: 7005
+      - REDIS_PASSWORD: admin123
+      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
+      - REDIS_CLUSTER_ANNOUNCE_PORT: 7005
+      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
+      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17005
+      - REDIS_CLUSTER_DYNAMIC_IPS: no
+    ports:
+      - 7005:7005
+      - 17005:17005
+
+  redis-node-6:
+    image: docker.io/bitnami/redis-cluster:7.0.15
+    hostname: redis-node-6
+    container_name: redis-node-6
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 172.22.0.106
+    environment:
+      - REDIS_PORT_NUMBER: 7006
+      - REDIS_PASSWORD: admin123
+      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
+      - REDIS_CLUSTER_ANNOUNCE_PORT: 7006
+      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
+      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17006
+      - REDIS_CLUSTER_DYNAMIC_IPS: no
+    ports:
+      - 7006:7006
+      - 17006:17006
+  
+  redis-cluster-init:
+    image: redis:7.0.15
+    container_name: redis-cluster-init
+    hostname: redis-cluster-init
+    restart: no
+    networks:
+      redis:
+        ipv4_address: 172.22.0.107
+    depends_on:
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+      - redis-node-4
+      - redis-node-5
+      - redis-node-6
+    entrypoint: []
+    command:
+      - /bin/bash
+      - -c
+      - redis-cli -a admin123 --cluster create 172.22.0.101:7001 172.22.0.102:7002 172.22.0.103:7003 172.22.0.104:7004 172.22.0.105:7005 172.22.0.106:7006 --cluster-replicas 1 --cluster-yes
 
   # CockroachDB
   # cockroach-db:
@@ -195,7 +298,7 @@ services:
   #     - ${PWD}/minio/data4-1:/data1
   #     - ${PWD}/minio/data4-2:/data2
 
-  # nginx:
+  # nginx-minio:
   #   image: nginx
   #   hostname: nginx-minio
   #   container_name: nginx-minio
@@ -234,3 +337,9 @@ networks:
     driver: bridge
   minio-network:
     driver: bridge
+  redis-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+          gateway: 172.22.0.1
