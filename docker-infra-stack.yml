@@ -16,148 +16,120 @@ version: "3.9"
 #     timeout: 5s
 #     retries: 5
 
+x-redis-common: &redis-common
+  image: docker.io/bitnami/redis-cluster:7.0.15
+  restart: always
+  network_mode: host
+
+x-rabbitmq-common: &rabbitmq-common
+  image: rabbitmq:3.12.12-management
+  restart: on-failure
+
 services:
   # Redis stack
   redis-node-1:
-    image: docker.io/bitnami/redis-cluster:7.0.15
     hostname: redis-node-1
     container_name: redis-node-1
-    restart: always
-    networks:
-      redis-network:
-        ipv4_address: 172.22.0.101
+    <<: *redis-common
+    # volumes:
+    #   - ${PWD}/redis/node-1:/bitnami/redis/data
     environment:
-      - REDIS_PORT_NUMBER: 7001
-      - REDIS_PASSWORD: admin123
-      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
-      - REDIS_CLUSTER_ANNOUNCE_PORT: 7001
-      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
-      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17001
-      - REDIS_CLUSTER_DYNAMIC_IPS: no
-    ports:
-      - 7001:7001
-      - 17001:17001
+      REDIS_PORT_NUMBER: 7001
+      REDIS_PASSWORD: admin123
+      REDISCLI_AUTH: admin123
+      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+      REDIS_CLUSTER_ANNOUNCE_PORT: 7001
+      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17001
+      REDIS_CLUSTER_DYNAMIC_IPS: no
 
   redis-node-2:
-    image: docker.io/bitnami/redis-cluster:7.0.15
     hostname: redis-node-2
     container_name: redis-node-2
-    restart: always
-    networks:
-      redis:
-        ipv4_address: 172.22.0.102
+    <<: *redis-common
+    # volumes:
+    #   - ${PWD}/redis/node-2:/bitnami/redis/data
     environment:
-      - REDIS_PORT_NUMBER: 7002
-      - REDIS_PASSWORD: admin123
-      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
-      - REDIS_CLUSTER_ANNOUNCE_PORT: 7002
-      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
-      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17002
-      - REDIS_CLUSTER_DYNAMIC_IPS: no
-    ports:
-      - 7002:7002
-      - 17002:17002
+      REDIS_PORT_NUMBER: 7002
+      REDIS_PASSWORD: admin123
+      REDISCLI_AUTH: admin123
+      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+      REDIS_CLUSTER_ANNOUNCE_PORT: 7002
+      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17002
+      REDIS_CLUSTER_DYNAMIC_IPS: no
 
   redis-node-3:
-    image: docker.io/bitnami/redis-cluster:7.0.15
     hostname: redis-node-3
     container_name: redis-node-3
-    restart: always
-    networks:
-      redis:
-        ipv4_address: 172.22.0.103
+    <<: *redis-common
+    # volumes:
+    #   - ${PWD}/redis/node-3:/bitnami/redis/data
     environment:
-      - REDIS_PORT_NUMBER: 7003
-      - REDIS_PASSWORD: admin123
-      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
-      - REDIS_CLUSTER_ANNOUNCE_PORT: 7003
-      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
-      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17003
-      - REDIS_CLUSTER_DYNAMIC_IPS: no
-    ports:
-      - 7003:7003
-      - 17003:17003
-  
+      REDIS_PORT_NUMBER: 7003
+      REDIS_PASSWORD: admin123
+      REDISCLI_AUTH: admin123
+      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+      REDIS_CLUSTER_ANNOUNCE_PORT: 7003
+      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17003
+      REDIS_CLUSTER_DYNAMIC_IPS: no
+
   redis-node-4:
-    image: docker.io/bitnami/redis-cluster:7.0.15
     hostname: redis-node-4
     container_name: redis-node-4
-    restart: always
-    networks:
-      redis:
-        ipv4_address: 172.22.0.104
+    <<: *redis-common
+    # volumes:
+    #   - ${PWD}/redis/node-4:/bitnami/redis/data
     environment:
-      - REDIS_PORT_NUMBER: 7004
-      - REDIS_PASSWORD: admin123
-      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
-      - REDIS_CLUSTER_ANNOUNCE_PORT: 7004
-      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
-      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17004
-      - REDIS_CLUSTER_DYNAMIC_IPS: no
-    ports:
-      - 7004:7004
-      - 17004:17004
+      REDIS_PORT_NUMBER: 7004
+      REDIS_PASSWORD: admin123
+      REDISCLI_AUTH: admin123
+      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+      REDIS_CLUSTER_ANNOUNCE_PORT: 7004
+      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17004
+      REDIS_CLUSTER_DYNAMIC_IPS: no
 
   redis-node-5:
-    image: docker.io/bitnami/redis-cluster:7.0.15
     hostname: redis-node-5
     container_name: redis-node-5
-    restart: always
-    networks:
-      redis:
-        ipv4_address: 172.22.0.105
+    <<: *redis-common
+    # volumes:
+    #   - ${PWD}/redis/node-5:/bitnami/redis/data
     environment:
-      - REDIS_PORT_NUMBER: 7005
-      - REDIS_PASSWORD: admin123
-      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
-      - REDIS_CLUSTER_ANNOUNCE_PORT: 7005
-      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
-      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17005
-      - REDIS_CLUSTER_DYNAMIC_IPS: no
-    ports:
-      - 7005:7005
-      - 17005:17005
+      REDIS_PORT_NUMBER: 7005
+      REDIS_PASSWORD: admin123
+      REDISCLI_AUTH: admin123
+      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+      REDIS_CLUSTER_ANNOUNCE_PORT: 7005
+      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17005
+      REDIS_CLUSTER_DYNAMIC_IPS: no
 
   redis-node-6:
-    image: docker.io/bitnami/redis-cluster:7.0.15
     hostname: redis-node-6
     container_name: redis-node-6
-    restart: always
-    networks:
-      redis:
-        ipv4_address: 172.22.0.106
-    environment:
-      - REDIS_PORT_NUMBER: 7006
-      - REDIS_PASSWORD: admin123
-      - REDIS_NODES: redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6
-      - REDIS_CLUSTER_ANNOUNCE_PORT: 7006
-      - REDIS_CLUSTER_ANNOUNCE_IP: 192.168.68.92
-      - REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17006
-      - REDIS_CLUSTER_DYNAMIC_IPS: no
-    ports:
-      - 7006:7006
-      - 17006:17006
-  
-  redis-cluster-init:
-    image: redis:7.0.15
-    container_name: redis-cluster-init
-    hostname: redis-cluster-init
-    restart: no
-    networks:
-      redis:
-        ipv4_address: 172.22.0.107
+    <<: *redis-common
     depends_on:
       - redis-node-1
       - redis-node-2
       - redis-node-3
       - redis-node-4
       - redis-node-5
-      - redis-node-6
-    entrypoint: []
-    command:
-      - /bin/bash
-      - -c
-      - redis-cli -a admin123 --cluster create 172.22.0.101:7001 172.22.0.102:7002 172.22.0.103:7003 172.22.0.104:7004 172.22.0.105:7005 172.22.0.106:7006 --cluster-replicas 1 --cluster-yes
+    # volumes:
+    #   - ${PWD}/redis/node-6:/bitnami/redis/data
+    environment:
+      REDIS_PORT_NUMBER: 7006
+      REDIS_PASSWORD: admin123
+      REDISCLI_AUTH: admin123
+      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+      REDIS_CLUSTER_ANNOUNCE_PORT: 7006
+      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17006
+      REDIS_CLUSTER_DYNAMIC_IPS: no
+      REDIS_CLUSTER_REPLICAS: 1
+      REDIS_CLUSTER_CREATOR: yes
 
   # CockroachDB
   # cockroach-db:
@@ -197,7 +169,7 @@ services:
   #     - 15692:15692 # prometheus
   #   networks:
   #     - rabbitmq-network
-  
+
   # rabbitmq-2:
   #   image: rabbitmq:3.12.12-management
   #   hostname: rabbitmq-2
@@ -225,7 +197,7 @@ services:
   #     - 15693:15692 # prometheus
   #   networks:
   #     - rabbitmq-network
-    
+
   # rabbitmq-3:
   #   image: rabbitmq:3.12.12-management
   #   hostname: rabbitmq-3
@@ -252,7 +224,7 @@ services:
   #     - 15694:15692 # prometheus
   #   networks:
   #     - rabbitmq-network
-    
+
   # nginx-rabbitmq:
   #   image: nginx
   #   container_name: nginx-rabbitmq
@@ -331,15 +303,7 @@ services:
   #     - infra-network
 
 networks:
-  infra-network:
-    driver: bridge
   rabbitmq-network:
     driver: bridge
   minio-network:
     driver: bridge
-  redis-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.22.0.0/16
-          gateway: 172.22.0.1
