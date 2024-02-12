@@ -24,112 +24,114 @@ x-redis-common: &redis-common
 x-rabbitmq-common: &rabbitmq-common
   image: rabbitmq:3.12.12-management
   restart: on-failure
+  networks:
+    - rabbitmq-network
 
 services:
   # Redis stack
-  redis-node-1:
-    hostname: redis-node-1
-    container_name: redis-node-1
-    <<: *redis-common
-    # volumes:
-    #   - ${PWD}/redis/node-1:/bitnami/redis/data
-    environment:
-      REDIS_PORT_NUMBER: 7001
-      REDIS_PASSWORD: admin123
-      REDISCLI_AUTH: admin123
-      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
-      REDIS_CLUSTER_ANNOUNCE_PORT: 7001
-      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
-      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17001
-      REDIS_CLUSTER_DYNAMIC_IPS: no
+  # redis-node-1:
+  #   hostname: redis-node-1
+  #   container_name: redis-node-1
+  #   <<: *redis-common
+  #   # volumes:
+  #   #   - ${PWD}/redis/node-1:/bitnami/redis/data
+  #   environment:
+  #     REDIS_PORT_NUMBER: 7001
+  #     REDIS_PASSWORD: admin123
+  #     REDISCLI_AUTH: admin123
+  #     REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+  #     REDIS_CLUSTER_ANNOUNCE_PORT: 7001
+  #     REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+  #     REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17001
+  #     REDIS_CLUSTER_DYNAMIC_IPS: no
 
-  redis-node-2:
-    hostname: redis-node-2
-    container_name: redis-node-2
-    <<: *redis-common
-    # volumes:
-    #   - ${PWD}/redis/node-2:/bitnami/redis/data
-    environment:
-      REDIS_PORT_NUMBER: 7002
-      REDIS_PASSWORD: admin123
-      REDISCLI_AUTH: admin123
-      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
-      REDIS_CLUSTER_ANNOUNCE_PORT: 7002
-      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
-      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17002
-      REDIS_CLUSTER_DYNAMIC_IPS: no
+  # redis-node-2:
+  #   hostname: redis-node-2
+  #   container_name: redis-node-2
+  #   <<: *redis-common
+  #   # volumes:
+  #   #   - ${PWD}/redis/node-2:/bitnami/redis/data
+  #   environment:
+  #     REDIS_PORT_NUMBER: 7002
+  #     REDIS_PASSWORD: admin123
+  #     REDISCLI_AUTH: admin123
+  #     REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+  #     REDIS_CLUSTER_ANNOUNCE_PORT: 7002
+  #     REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+  #     REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17002
+  #     REDIS_CLUSTER_DYNAMIC_IPS: no
 
-  redis-node-3:
-    hostname: redis-node-3
-    container_name: redis-node-3
-    <<: *redis-common
-    # volumes:
-    #   - ${PWD}/redis/node-3:/bitnami/redis/data
-    environment:
-      REDIS_PORT_NUMBER: 7003
-      REDIS_PASSWORD: admin123
-      REDISCLI_AUTH: admin123
-      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
-      REDIS_CLUSTER_ANNOUNCE_PORT: 7003
-      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
-      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17003
-      REDIS_CLUSTER_DYNAMIC_IPS: no
+  # redis-node-3:
+  #   hostname: redis-node-3
+  #   container_name: redis-node-3
+  #   <<: *redis-common
+  #   # volumes:
+  #   #   - ${PWD}/redis/node-3:/bitnami/redis/data
+  #   environment:
+  #     REDIS_PORT_NUMBER: 7003
+  #     REDIS_PASSWORD: admin123
+  #     REDISCLI_AUTH: admin123
+  #     REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+  #     REDIS_CLUSTER_ANNOUNCE_PORT: 7003
+  #     REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+  #     REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17003
+  #     REDIS_CLUSTER_DYNAMIC_IPS: no
 
-  redis-node-4:
-    hostname: redis-node-4
-    container_name: redis-node-4
-    <<: *redis-common
-    # volumes:
-    #   - ${PWD}/redis/node-4:/bitnami/redis/data
-    environment:
-      REDIS_PORT_NUMBER: 7004
-      REDIS_PASSWORD: admin123
-      REDISCLI_AUTH: admin123
-      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
-      REDIS_CLUSTER_ANNOUNCE_PORT: 7004
-      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
-      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17004
-      REDIS_CLUSTER_DYNAMIC_IPS: no
+  # redis-node-4:
+  #   hostname: redis-node-4
+  #   container_name: redis-node-4
+  #   <<: *redis-common
+  #   # volumes:
+  #   #   - ${PWD}/redis/node-4:/bitnami/redis/data
+  #   environment:
+  #     REDIS_PORT_NUMBER: 7004
+  #     REDIS_PASSWORD: admin123
+  #     REDISCLI_AUTH: admin123
+  #     REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+  #     REDIS_CLUSTER_ANNOUNCE_PORT: 7004
+  #     REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+  #     REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17004
+  #     REDIS_CLUSTER_DYNAMIC_IPS: no
 
-  redis-node-5:
-    hostname: redis-node-5
-    container_name: redis-node-5
-    <<: *redis-common
-    # volumes:
-    #   - ${PWD}/redis/node-5:/bitnami/redis/data
-    environment:
-      REDIS_PORT_NUMBER: 7005
-      REDIS_PASSWORD: admin123
-      REDISCLI_AUTH: admin123
-      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
-      REDIS_CLUSTER_ANNOUNCE_PORT: 7005
-      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
-      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17005
-      REDIS_CLUSTER_DYNAMIC_IPS: no
+  # redis-node-5:
+  #   hostname: redis-node-5
+  #   container_name: redis-node-5
+  #   <<: *redis-common
+  #   # volumes:
+  #   #   - ${PWD}/redis/node-5:/bitnami/redis/data
+  #   environment:
+  #     REDIS_PORT_NUMBER: 7005
+  #     REDIS_PASSWORD: admin123
+  #     REDISCLI_AUTH: admin123
+  #     REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+  #     REDIS_CLUSTER_ANNOUNCE_PORT: 7005
+  #     REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+  #     REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17005
+  #     REDIS_CLUSTER_DYNAMIC_IPS: no
 
-  redis-node-6:
-    hostname: redis-node-6
-    container_name: redis-node-6
-    <<: *redis-common
-    depends_on:
-      - redis-node-1
-      - redis-node-2
-      - redis-node-3
-      - redis-node-4
-      - redis-node-5
-    # volumes:
-    #   - ${PWD}/redis/node-6:/bitnami/redis/data
-    environment:
-      REDIS_PORT_NUMBER: 7006
-      REDIS_PASSWORD: admin123
-      REDISCLI_AUTH: admin123
-      REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
-      REDIS_CLUSTER_ANNOUNCE_PORT: 7006
-      REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
-      REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17006
-      REDIS_CLUSTER_DYNAMIC_IPS: no
-      REDIS_CLUSTER_REPLICAS: 1
-      REDIS_CLUSTER_CREATOR: yes
+  # redis-node-6:
+  #   hostname: redis-node-6
+  #   container_name: redis-node-6
+  #   <<: *redis-common
+  #   depends_on:
+  #     - redis-node-1
+  #     - redis-node-2
+  #     - redis-node-3
+  #     - redis-node-4
+  #     - redis-node-5
+  #   # volumes:
+  #   #   - ${PWD}/redis/node-6:/bitnami/redis/data
+  #   environment:
+  #     REDIS_PORT_NUMBER: 7006
+  #     REDIS_PASSWORD: admin123
+  #     REDISCLI_AUTH: admin123
+  #     REDIS_NODES: 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+  #     REDIS_CLUSTER_ANNOUNCE_PORT: 7006
+  #     REDIS_CLUSTER_ANNOUNCE_IP: 127.0.0.1
+  #     REDIS_CLUSTER_BUS_ANNOUNCE_PORT: 17006
+  #     REDIS_CLUSTER_DYNAMIC_IPS: no
+  #     REDIS_CLUSTER_REPLICAS: 1
+  #     REDIS_CLUSTER_CREATOR: yes
 
   # CockroachDB
   # cockroach-db:
@@ -147,99 +149,80 @@ services:
   #     - infra-network
 
   # RabbitMQ stack
-  # rabbitmq-1:
-  #   image: rabbitmq:3.12.12-management
-  #   hostname: rabbitmq-1
-  #   container_name: rabbitmq-1
-  #   restart: on-failure
-  #   environment:
-  #     RABBITMQ_DEFAULT_USER: guest
-  #     RABBITMQ_DEFAULT_PASS: guest
-  #     RABBITMQ_CONFIG_FILE: /config/rabbitmq
-  #     RABBITMQ_ERLANG_COOKIE: GREATIST
-  #     RABBITMQ_DEFAULT_VHOST: /
-  #   volumes:
-  #     - ${PWD}/apps/rabbit-1:/config/
-  #     # - ${PWD}/rabbitmq/etc-1/:/etc/rabbitmq/
-  #     # - ${PWD}/rabbitmq/data-1/:/var/lib/rabbitmq/
-  #     # - ${PWD}/rabbitmq/logs-1/:/var/log/rabbitmq/
-  #   ports:
-  #     - 5672:5672   # amqp
-  #     - 15672:15672 # http
-  #     - 15692:15692 # prometheus
-  #   networks:
-  #     - rabbitmq-network
+  rabbitmq-1:
+    <<: *rabbitmq-common
+    hostname: rabbitmq-1
+    container_name: rabbitmq-1
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_CONFIG_FILE: /config/rabbitmq
+      RABBITMQ_ERLANG_COOKIE: GREATIST
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - ${PWD}/apps/rabbit-1:/config/
+    ports:
+      - 5672:5672   # amqp
+      - 15672:15672 # http
+      - 15692:15692 # prometheus
 
-  # rabbitmq-2:
-  #   image: rabbitmq:3.12.12-management
-  #   hostname: rabbitmq-2
-  #   container_name: rabbitmq-2
-  #   restart: on-failure
-  #   depends_on:
-  #     - rabbitmq-1
-  #   volumes:
-  #     - ${PWD}/apps/rabbit-2:/config/
-  #     # - ${PWD}/rabbitmq/etc-2/:/etc/rabbitmq/
-  #     # - ${PWD}/rabbitmq/data-2/:/var/lib/rabbitmq/
-  #     # - ${PWD}/rabbitmq/logs-2/:/var/log/rabbitmq/
-  #   environment:
-  #     # RABBITMQ_DEFAULT_USER: guest
-  #     # RABBITMQ_DEFAULT_PASS: guest
-  #     RABBITMQ_ERLANG_COOKIE: GREATIST
-  #     RABBITMQ_CONFIG_FILE: /config/rabbitmq
-  #     RABBITMQ_DEFAULT_VHOST: /
-  #     CLUSTERED: true
-  #     CLUSTER_WITH: rabbitmq-1
-  #     RAM_NODE: true
-  #   ports:
-  #     - 5673:5672   # amqp
-  #     - 15673:15672 # http
-  #     - 15693:15692 # prometheus
-  #   networks:
-  #     - rabbitmq-network
+  rabbitmq-2:
+    <<: *rabbitmq-common
+    hostname: rabbitmq-2
+    container_name: rabbitmq-2
+    restart: on-failure
+    depends_on:
+      - rabbitmq-1
+    volumes:
+      - ${PWD}/apps/rabbit-2:/config/
+    environment:
+      RABBITMQ_ERLANG_COOKIE: GREATIST
+      RABBITMQ_CONFIG_FILE: /config/rabbitmq
+      RABBITMQ_DEFAULT_VHOST: /
+      CLUSTERED: true
+      CLUSTER_WITH: rabbitmq-1
+      RAM_NODE: true
+    ports:
+      - 5673:5672   # amqp
+      - 15673:15672 # http
+      - 15693:15692 # prometheus
+    networks:
+      - rabbitmq-network
 
-  # rabbitmq-3:
-  #   image: rabbitmq:3.12.12-management
-  #   hostname: rabbitmq-3
-  #   container_name: rabbitmq-3
-  #   restart: on-failure
-  #   depends_on:
-  #     - rabbitmq-1
-  #   volumes:
-  #     - ${PWD}/apps/rabbit-3:/config/
-  #     # - ${PWD}/rabbitmq/etc-3/:/etc/rabbitmq/
-  #     # - ${PWD}/rabbitmq/data-3/:/var/lib/rabbitmq/
-  #     # - ${PWD}/rabbitmq/logs-3/:/var/log/rabbitmq/
-  #   environment:
-  #     # RABBITMQ_DEFAULT_USER: guest
-  #     # RABBITMQ_DEFAULT_PASS: guest
-  #     RABBITMQ_ERLANG_COOKIE: GREATIST
-  #     RABBITMQ_CONFIG_FILE: /config/rabbitmq
-  #     RABBITMQ_DEFAULT_VHOST: /
-  #     CLUSTERED: true
-  #     CLUSTER_WITH: rabbitmq-1
-  #   ports:
-  #     - 5674:5672   # amqp
-  #     - 15674:15672 # http
-  #     - 15694:15692 # prometheus
-  #   networks:
-  #     - rabbitmq-network
+  rabbitmq-3:
+    <<: *rabbitmq-common
+    hostname: rabbitmq-3
+    container_name: rabbitmq-3
+    depends_on:
+      - rabbitmq-1
+    volumes:
+      - ${PWD}/apps/rabbit-3:/config/
+    environment:
+      RABBITMQ_ERLANG_COOKIE: GREATIST
+      RABBITMQ_CONFIG_FILE: /config/rabbitmq
+      RABBITMQ_DEFAULT_VHOST: /
+      CLUSTERED: true
+      CLUSTER_WITH: rabbitmq-1
+    ports:
+      - 5674:5672   # amqp
+      - 15674:15672 # http
+      - 15694:15692 # prometheus
 
-  # nginx-rabbitmq:
-  #   image: nginx
-  #   container_name: nginx-rabbitmq
-  #   ports:
-  #     - 5000:80
-  #     - 15000:15000
-  #   volumes:
-  #     - ${PWD}/apps/nginx-rabbitmq.conf:/etc/nginx/nginx.conf
-  #     - ${PWD}/nginx-rabbitmq/log:/var/log/nginx/
-  #   networks:
-  #     - rabbitmq-network
-  #   depends_on:
-  #     - rabbitmq-1
-  #     - rabbitmq-2
-  #     - rabbitmq-3
+  nginx-rabbitmq:
+    image: nginx
+    container_name: nginx-rabbitmq
+    ports:
+      - 5000:80
+      - 15000:15000
+    volumes:
+      - ${PWD}/apps/nginx-rabbitmq.conf:/etc/nginx/nginx.conf
+      - ${PWD}/nginx-rabbitmq/log:/var/log/nginx/
+    networks:
+      - rabbitmq-network
+    depends_on:
+      - rabbitmq-1
+      - rabbitmq-2
+      - rabbitmq-3
 
   # Minio stack
   # minio-1:
