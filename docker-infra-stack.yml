@@ -1,20 +1,20 @@
 version: "3.9"
 
 # Settings and configurations that are common for all containers
-# x-minio-common: &minio-common
-#   image: quay.io/minio/minio:RELEASE.2024-02-09T21-25-16Z
-#   command: server --console-address ":9001" http://minio-{1...4}/data{1...2}
-#   expose:
-#     - "9000"
-#     - "9001"
-#   environment:
-#     MINIO_ROOT_USER: admin
-#     MINIO_ROOT_PASSWORD: admin123
-#   healthcheck:
-#     test: ["CMD", "mc", "ready", "local"]
-#     interval: 5s
-#     timeout: 5s
-#     retries: 5
+x-minio-common: &minio-common
+  image: quay.io/minio/minio:RELEASE.2024-02-09T21-25-16Z
+  command: server --console-address ":9001" http://minio-{1...4}/data{1...2}
+  expose:
+    - "9000"
+    - "9001"
+  environment:
+    MINIO_ROOT_USER: admin
+    MINIO_ROOT_PASSWORD: admin123
+  healthcheck:
+    test: ["CMD", "mc", "ready", "local"]
+    interval: 5s
+    timeout: 5s
+    retries: 5
 
 x-redis-common: &redis-common
   image: docker.io/bitnami/redis-cluster:7.0.15
@@ -26,6 +26,13 @@ x-rabbitmq-common: &rabbitmq-common
   restart: on-failure
   networks:
     - rabbitmq-network
+
+x-roachdb-common: &roachdb-common
+  image: cockroachdb/cockroach:latest-v22.1
+  environment:
+    ALLOW_EMPTY_PASSWORD: yes
+  networks:
+    - coachdb-network
 
 services:
   # Redis stack
@@ -134,19 +141,38 @@ services:
   #     REDIS_CLUSTER_CREATOR: yes
 
   # CockroachDB
-  # cockroach-db:
-  #   image: cockroachdb/cockroach:v19.2.2
-  #   hostname: cockroach
-  #   container_name: cockroach
-  #   restart: on-failure
-  #   ports:
-  #     - 26257:26257
-  #     - 8080:8080
-  #   command: start-single-node --insecure
-  #   volumes:
-  #     - ${PWD}/cockroach/crdb:/cockroach/cockroach-data
-  #   networks:
-  #     - infra-network
+  roach-node-1:
+    <<: *roachdb-common
+    container_name: roach-node-1
+    hostname: roach-node-1
+    command: start  --insecure --join=roach-node-1,roach-node-2,roach-node-3 --listen-addr=roach-node-1:26257 --advertise-addr=roach-node-1:26257 --max-sql-memory=.25 --cache=.25
+
+  roach-node-2:
+    <<: *roachdb-common
+    container_name: roach-node-2
+    hostname: roach-node-2
+    command: start  --insecure --join=roach-node-1,roach-node-2,roach-node-3 --listen-addr=roach-node-2:26257 --advertise-addr=roach-node-2:26257 --max-sql-memory=.25 --cache=.25
+
+  roach-node-3:
+    <<: *roachdb-common
+    container_name: roach-node-3
+    hostname: roach-node-3
+    command: start  --insecure --join=roach-node-1,roach-node-2,roach-node-3 --listen-addr=roach-node-3:26257 --advertise-addr=roach-node-3:26257 --max-sql-memory=.25 --cache=.25
+
+  init:
+    <<: *roachdb-common
+    container_name: init
+    command: init --host=roach-node-1 --insecure
+    depends_on:
+      - roach-node-1
+
+  client:
+    container_name: client
+    hostname: client
+    image: cockroachdb/cockroach:latest-v22.1
+    entrypoint: ["/usr/bin/tail", "-f", "/dev/null"]
+    networks:
+      - coachdb-network
 
   # RabbitMQ stack
   # rabbitmq-1:
@@ -289,4 +315,6 @@ networks:
   rabbitmq-network:
     driver: bridge
   minio-network:
+    driver: bridge
+  coachdb-network:
     driver: bridge
