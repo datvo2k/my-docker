@@ -149,80 +149,80 @@ services:
   #     - infra-network
 
   # RabbitMQ stack
-  rabbitmq-1:
-    <<: *rabbitmq-common
-    hostname: rabbitmq-1
-    container_name: rabbitmq-1
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-      RABBITMQ_CONFIG_FILE: /config/rabbitmq
-      RABBITMQ_ERLANG_COOKIE: GREATIST
-      RABBITMQ_DEFAULT_VHOST: /
-    volumes:
-      - ${PWD}/apps/rabbit-1:/config/
-    ports:
-      - 5672:5672   # amqp
-      - 15672:15672 # http
-      - 15692:15692 # prometheus
+  # rabbitmq-1:
+  #   <<: *rabbitmq-common
+  #   hostname: rabbitmq-1
+  #   container_name: rabbitmq-1
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: guest
+  #     RABBITMQ_DEFAULT_PASS: guest
+  #     RABBITMQ_CONFIG_FILE: /config/rabbitmq
+  #     RABBITMQ_ERLANG_COOKIE: GREATIST
+  #     RABBITMQ_DEFAULT_VHOST: /
+  #   volumes:
+  #     - ${PWD}/apps/rabbit-1:/config/
+  #   ports:
+  #     - 5672:5672   # amqp
+  #     - 15672:15672 # http
+  #     - 15692:15692 # prometheus
 
-  rabbitmq-2:
-    <<: *rabbitmq-common
-    hostname: rabbitmq-2
-    container_name: rabbitmq-2
-    restart: on-failure
-    depends_on:
-      - rabbitmq-1
-    volumes:
-      - ${PWD}/apps/rabbit-2:/config/
-    environment:
-      RABBITMQ_ERLANG_COOKIE: GREATIST
-      RABBITMQ_CONFIG_FILE: /config/rabbitmq
-      RABBITMQ_DEFAULT_VHOST: /
-      CLUSTERED: true
-      CLUSTER_WITH: rabbitmq-1
-      RAM_NODE: true
-    ports:
-      - 5673:5672   # amqp
-      - 15673:15672 # http
-      - 15693:15692 # prometheus
-    networks:
-      - rabbitmq-network
+  # rabbitmq-2:
+  #   <<: *rabbitmq-common
+  #   hostname: rabbitmq-2
+  #   container_name: rabbitmq-2
+  #   restart: on-failure
+  #   depends_on:
+  #     - rabbitmq-1
+  #   volumes:
+  #     - ${PWD}/apps/rabbit-2:/config/
+  #   environment:
+  #     RABBITMQ_ERLANG_COOKIE: GREATIST
+  #     RABBITMQ_CONFIG_FILE: /config/rabbitmq
+  #     RABBITMQ_DEFAULT_VHOST: /
+  #     CLUSTERED: true
+  #     CLUSTER_WITH: rabbitmq-1
+  #     RAM_NODE: true
+  #   ports:
+  #     - 5673:5672   # amqp
+  #     - 15673:15672 # http
+  #     - 15693:15692 # prometheus
+  #   networks:
+  #     - rabbitmq-network
 
-  rabbitmq-3:
-    <<: *rabbitmq-common
-    hostname: rabbitmq-3
-    container_name: rabbitmq-3
-    depends_on:
-      - rabbitmq-1
-    volumes:
-      - ${PWD}/apps/rabbit-3:/config/
-    environment:
-      RABBITMQ_ERLANG_COOKIE: GREATIST
-      RABBITMQ_CONFIG_FILE: /config/rabbitmq
-      RABBITMQ_DEFAULT_VHOST: /
-      CLUSTERED: true
-      CLUSTER_WITH: rabbitmq-1
-    ports:
-      - 5674:5672   # amqp
-      - 15674:15672 # http
-      - 15694:15692 # prometheus
+  # rabbitmq-3:
+  #   <<: *rabbitmq-common
+  #   hostname: rabbitmq-3
+  #   container_name: rabbitmq-3
+  #   depends_on:
+  #     - rabbitmq-1
+  #   volumes:
+  #     - ${PWD}/apps/rabbit-3:/config/
+  #   environment:
+  #     RABBITMQ_ERLANG_COOKIE: GREATIST
+  #     RABBITMQ_CONFIG_FILE: /config/rabbitmq
+  #     RABBITMQ_DEFAULT_VHOST: /
+  #     CLUSTERED: true
+  #     CLUSTER_WITH: rabbitmq-1
+  #   ports:
+  #     - 5674:5672   # amqp
+  #     - 15674:15672 # http
+  #     - 15694:15692 # prometheus
 
-  nginx-rabbitmq:
-    image: nginx
-    container_name: nginx-rabbitmq
-    ports:
-      - 5000:80
-      - 15000:15000
-    volumes:
-      - ${PWD}/apps/nginx-rabbitmq.conf:/etc/nginx/nginx.conf
-      - ${PWD}/nginx-rabbitmq/log:/var/log/nginx/
-    networks:
-      - rabbitmq-network
-    depends_on:
-      - rabbitmq-1
-      - rabbitmq-2
-      - rabbitmq-3
+  # nginx-rabbitmq:
+  #   image: nginx
+  #   container_name: nginx-rabbitmq
+  #   ports:
+  #     - 5000:80
+  #     - 15000:15000
+  #   volumes:
+  #     - ${PWD}/apps/nginx-rabbitmq.conf:/etc/nginx/nginx.conf
+  #     - ${PWD}/nginx-rabbitmq/log:/var/log/nginx/
+  #   networks:
+  #     - rabbitmq-network
+  #   depends_on:
+  #     - rabbitmq-1
+  #     - rabbitmq-2
+  #     - rabbitmq-3
 
   # Minio stack
   # minio-1:
