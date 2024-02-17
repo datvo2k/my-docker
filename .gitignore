@@ -1,3 +1,6 @@
-nginx-rabbitmq/*
+nginx-rabbitmq
 .env
 minio
+roach
+postgres-bg-ferretdb
+typesense
