@@ -1,85 +1,86 @@
 version: "3.9"
+
+x-mongo-common: &mongo-common
+  image: mongo:7.0.5
+  volumes:
+    - ./scripts:/scripts
+  restart: on-failure
+  networks:
+    - mongo-minimize-network
+
 services:
 
 ## Router
-  router01:
-    image: mongo:6.0.1
-    container_name: router-01
-    command: mongos --port 27017 --configdb rs-config-server/configsvr01:27017 --bind_ip_all
+  ## Router
+  router-1:
+    <<: *mongo-common
+    container_name: router-1
+    command: mongos --port 27017 --configdb rs-config-server/configsvr-1:27017 --bind_ip_all
     ports:
       - 27117:27017
-    volumes:
-      - ./scripts:/scripts
 
 ## Config Servers
-  configsvr01:
-    image: mongo:6.0.1
-    container_name: mongo-config-01 
+  configsvr-1:
+    <<: *mongo-common
+    container_name: mongo-config-1 
     command: mongod --port 27017 --configsvr --replSet rs-config-server
-    volumes:
-      - ./scripts:/scripts 
     ports:
       - 27119:27017
-    links:
-      - shard01-a
-      - shard02-a 
+    depends_on:
+      - shard-1a
+      - shard-2a 
 
 ## Shards
   ## Shards 01
-   
-  shard01-a:
-    image: mongo:6.0.1
-    container_name: shard-01-node-a
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-01
-    volumes:
-      - ./scripts:/scripts
+  shard-1a:
+    <<: *mongo-common
+    container_name: shard-1-node-a
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-1
     ports:
       - 27122:27017
-    links:
-      - shard01-b
-      - shard01-c
-  shard01-b:
-    image: mongo:6.0.1
-    container_name: shard-01-node-b
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-01
-    volumes:
-      - ./scripts:/scripts
+    depends_on:
+      - shard-1b
+      - shard-1c
+
+  shard-1b:
+    <<: *mongo-common
+    container_name: shard-1-node-b
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-1
     ports:
       - 27123:27017
-  shard01-c:
-    image: mongo:6.0.1
-    container_name: shard-01-node-c
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-01
-    volumes:
-      - ./scripts:/scripts
+
+  shard-1c:
+    <<: *mongo-common
+    container_name: shard-1-node-c
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-1
     ports:
       - 27124:27017
 
   ## Shards 02
-  shard02-a:
-    image: mongo:6.0.1
-    container_name: shard-02-node-a
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-02
-    volumes:
-      - ./scripts:/scripts
+  shard-2a:
+    <<: *mongo-common
+    container_name: shard-2-node-a
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-2
     ports:
       - 27125:27017
-    links:
-      - shard02-b
-      - shard02-c
-  shard02-b:
-    image: mongo:6.0.1
-    container_name: shard-02-node-b
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-02
-    volumes:
-      - ./scripts:/scripts
+    depends_on:
+      - shard-2b
+      - shard-2c
+
+  shard-2b:
+    <<: *mongo-common
+    container_name: shard-2-node-b
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-2
     ports:
       - 27126:27017
-  shard02-c:
-    image: mongo:6.0.1
-    container_name: shard-02-node-c
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-02
-    volumes:
-      - ./scripts:/scripts
+
+  shard-2c:
+    <<: *mongo-common
+    container_name: shard-2-node-c
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-2
     ports:
       - 27127:27017
+
+networks:
+  mongo-minimize-network:
+    driver: bridge
