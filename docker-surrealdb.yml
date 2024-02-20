@@ -1,0 +1,9 @@
+version: "3.9"
+
+x-surrealdb-common: &surrealdb-common
+  image:
+  ports:
+  volumes:
+  restart: on-failure
+
+services:
