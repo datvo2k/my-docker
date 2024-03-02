@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  mongo-db:
+    build: .
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-volume:/var/lib/mongodb
+    environment:
+      MONGO_ROOT_PWD: mySavePassword
+      MONGO_WIREDTIGER_CACHE_SIZE_GB: "4.21"
+      MONGO_EXTRA_ARGS: "--ipv6 --quiet"
+    restart: always
+    networks:
+      - mongo-network
+
+networks:
+  mongo-network:
+    driver: bridge
+
+volumes:
+  mongo-volume:
+    external: false
+    labels:
+      author: "Brian Vo"
+      description: "mongo database"
