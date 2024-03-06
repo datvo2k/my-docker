@@ -1,18 +1,18 @@
 version: "3.9"
 
 services:
-  mongo-db:
+  mongo:
     container_name: mongo
-    build: .
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: example
     ports:
       - 27017:27017
     volumes:
-      - mongo-volume:/var/lib/mongodb
-    environment:
-      MONGO_ROOT_PWD: mySavePassword
-      MONGO_WIREDTIGER_CACHE_SIZE_GB: "4.21"
-      MONGO_EXTRA_ARGS: "--ipv6 --quiet"
-    restart: always
+      - mongodb_data_container:/data/db
     networks:
       - mongo-network
 
@@ -21,7 +21,7 @@ networks:
     driver: bridge
 
 volumes:
-  mongo-volume:
+  mongodb_data_container:
     external: false
     labels:
       author: "Brian Vo"
