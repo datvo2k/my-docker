@@ -4,3 +4,7 @@ minio
 roach
 postgres-bg-ferretdb
 typesense
+mongodb/single-proxy/cert
+mongodb/single-proxy/letsencrypt
+mongodb/single-proxy/data
+mongodb/single-proxy/tls.yaml

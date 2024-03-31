@@ -3,6 +3,7 @@ version: "3.9"
 services:
   mongo:
     container_name: mongo
+    hostname: mongo.local
     image: mongo:latest
     restart: always
     environment:

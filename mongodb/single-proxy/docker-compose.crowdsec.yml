@@ -1,0 +1,92 @@
+version: "3.9"
+
+services:
+  reverse-proxy:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --api
+      - --api.insecure=true
+      - --providers.docker=true # logs for debugging
+      - --log.filePath=/var/log/crowdsec/treafik-tcpudp.log
+      - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      ## Logs for Crowdsec
+      - --accessLog=true
+      - --accessLog.filePath=/var/log/crowdsec/traefik.log
+      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
+      - --accessLog.filters.statusCodes=204-299,400-499,500-59
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.prodresolver.acme.email=example@email.com
+      - --certificatesresolvers.prodresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.prodresolver.acme.keytype=RSA4096
+      - --certificatesresolvers.prodresolver.acme.tlschallenge=true
+      - --certificatesresolvers.prodresolver.acme.storage=/letsencrypt/acme.json
+      - --entrypoints.tcp-mongo.address=:27017
+      - --entrypoints.udp-mongo.address=:21116/udp
+    networks:
+      - proxy
+      - backend
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+      - 27017:27017/tcp
+      - 8080:8080/tcp
+      - 21116:21116/udp
+    volumes:
+      - /var/log/crowdsec/:/var/log/crowdsec/
+      - ./letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./tls.yaml:/etc/traefik/tls.yaml
+
+  crowdsec:
+    image: crowdsecurity/crowdsec
+    container_name: crowdsec
+    restart: unless-stopped
+    environment:
+      PGID: "1000"
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/sshd"
+    expose:
+      - 8080
+    volumes:
+      - /var/log/crowdsec:/var/log/crowdsec:ro
+      - /opt/crowdsec-db:/var/lib/crowdsec/data
+      - /var/log/auth.log:/var/log/auth.log:ro
+      - /var/log/syslog.log:/logs/syslog.log:ro
+      - /opt/crowdsec:/etc/crowdsec
+    networks:
+      - proxy
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    hostname: mongo.local
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      # create volume
+      - ./data:/data
+    networks:
+      - backend
+    expose:
+      - 27017/tcp
+      - 21116/udp
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.mongo-tcp.entrypoints=tcp-mongo
+      - traefik.tcp.routers.mongo-tcp.rule=HostSNI(`*`)
+      - traefik.tcp.routers.mongo-tcp.tls=true
+      - traefik.tcp.routers.mongo-tcp.tls.certresolver=prodresolver
+      - traefik.tcp.services.mongo-tcp.loadbalancer.server.port=27017
+      - traefik.udp.routers.mongo-udp.entrypoints=udp-mongo
+      - traefik.udp.services.mongo-udp.loadbalancer.server.port=21116
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+  backend:
+    name: backend

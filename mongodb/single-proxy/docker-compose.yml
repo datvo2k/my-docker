@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  reverse-proxy:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --api
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.mongo.address=:27017
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --log.level=DEBUG
+      - --certificatesresolvers.le.acme.email=example@gmail.com
+      - --certificatesresolvers.le.acme.storage=./acme.json
+      - --certificatesresolvers.le.acme.tlschallenge=true
+    networks:
+      - traefik-mongod
+    ports:
+      - 27017:27017/tcp
+      - 8080:8080/tcp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme.json:/acme.json
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    hostname: mongo.local
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      # create volume
+      - ./data:/data
+    networks:
+      - traefik-mongod
+    expose:
+      - 27017/tcp
