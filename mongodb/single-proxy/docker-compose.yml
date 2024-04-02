@@ -9,6 +9,8 @@ services:
       - --api
       - --api.insecure=true
       - --providers.docker=true
+      - --providers.docker.network=traefik-mongod
+      - --providers.docker.exposedbydefault=false
       - --entrypoints.mongo.address=:27017
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -28,15 +30,37 @@ services:
   mongo:
     container_name: mongo
     image: mongo
-    hostname: mongo.local
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_PASSWORD: root123Passw0rD
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.mongo.rule=HostSNI(`*`)
+      - traefik.tcp.routers.mongo.tls=true
+      - traefik.tcp.routers.mongo.entrypoints=mongo
+      - traefik.tcp.services.mongo.loadbalancer.server.port=27017
     volumes:
       # create volume
-      - ./data:/data
+      - mongodb_traefik_data_container:/data
     networks:
       - traefik-mongod
     expose:
       - 27017/tcp
+    # healthcheck:
+    #   test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 30s
+
+volumes:
+  mongodb_traefik_data_container:
+    external: false
+    labels:
+      author: "Brian Vo"
+      description: "mongo database"
+
+networks:
+  traefik-mongod:
+    external: true
